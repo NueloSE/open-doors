@@ -6,11 +6,17 @@ import { sentence, usd } from './explain.js';
 import { closeDoors } from './revoke.js';
 import { BawMissing } from './baw.js';
 import type { Approval, Tier } from './types.js';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+/** Bundled sample, resolved relative to this file so it works from any cwd. */
+const DEMO_FIXTURE = join(dirname(fileURLToPath(import.meta.url)), '..', 'fixtures', 'demo.json');
 
 const HELP = `
 open-doors — see what can spend your tokens without asking, and close it.
 
   open-doors scan                    rank every standing approval by money at risk
+  open-doors scan --demo             run on bundled sample data, no wallet needed
   open-doors scan --all              include low-risk approvals
   open-doors explain <id>            explain one approval in full
   open-doors close <id>              close one approval
@@ -19,7 +25,8 @@ open-doors — see what can spend your tokens without asking, and close it.
 Options
   --chain <id>       limit to one chain (e.g. 56 for BSC)
   --material <usd>   ignore approvals reaching less than this (default 100)
-  --fixture <path>   read saved JSON instead of the wallet, for offline runs
+  --demo             use the bundled sample instead of a wallet
+  --fixture <path>   read a saved JSON capture instead of the wallet
   --json             machine-readable output
   --yes              skip per-approval confirmation (not recommended)
 `;
@@ -39,15 +46,21 @@ function parse(argv: string[]): Args {
   return out;
 }
 
+function fixturePath(args: Args): string | undefined {
+  if (args.demo === true) return DEMO_FIXTURE;
+  return typeof args.fixture === 'string' ? args.fixture : undefined;
+}
+
 async function load(args: Args) {
+  const fixture = fixturePath(args);
   const { approvals, prices } = await collect({
     chainId: typeof args.chain === 'string' ? args.chain : undefined,
-    fixture: typeof args.fixture === 'string' ? args.fixture : undefined,
+    fixture,
   });
   const material = typeof args.material === 'string' ? Number(args.material) : undefined;
   // Rank once cheaply, enrich the top of the list, then rank again with expiry known.
   let ranked = score(approvals, prices, { materialUsd: material });
-  if (!args.fixture) {
+  if (!fixture) {
     await enrichExpiry(ranked);
     ranked = score(ranked, prices, { materialUsd: material });
   }
@@ -65,6 +78,9 @@ async function main() {
   if (cmd === 'scan') {
     const { ranked, totals: t } = await load(args);
     if (args.json) { console.log(JSON.stringify({ totals: t, approvals: ranked }, null, 2)); return; }
+    if (args.demo === true) {
+      console.log('\n  Sample data — not your wallet. Run without --demo to scan your own.');
+    }
     process.stdout.write(renderScan(ranked, t, { showAll: args.all === true }));
     return;
   }
@@ -82,6 +98,12 @@ async function main() {
   }
 
   if (cmd === 'close') {
+    if (args.demo === true) {
+      console.error('\n  --demo is sample data. There is nothing real to close.\n' +
+                    '  Run `open-doors scan` against your own wallet first.\n');
+      process.exitCode = 1;
+      return;
+    }
     const { ranked } = await load(args);
     let targets: Approval[];
     const tier = typeof args.tier === 'string' ? args.tier.toUpperCase() as Tier : null;

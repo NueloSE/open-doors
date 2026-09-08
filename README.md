@@ -18,6 +18,29 @@ Agent OS Mini Hackathon.
   Close the critical ones:  open-doors close --tier CRITICAL
 ```
 
+## Reviewers: two ways to try it
+
+**Zero setup — 30 seconds, no wallet, no keys:**
+
+```bash
+git clone <this repo> && cd open-doors && npm install
+npx tsx src/cli.ts scan --demo
+```
+
+**On your own wallet — read-only, no risk:**
+
+```bash
+npx tsx src/cli.ts scan
+```
+
+`scan` only reads. It calls `wallet chains`, `wallet balance`, `approvals list` and
+`approvals detail` and writes nothing. If you already have a Binance Agentic Wallet, point it at
+yours and it will tell you something true about it in about ten seconds — most active wallets have
+approvals nobody has looked at.
+
+The only command that changes anything is `close`, which confirms every single revoke individually
+and refuses to run at all in `--demo` mode.
+
 ## The problem
 
 Every swap you have ever made was two transactions, not one. First you **approved** a contract to
