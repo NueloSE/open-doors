@@ -30,10 +30,31 @@ export class BawMissing extends Error {
   }
 }
 
-export type BawEnvelope<T> = { success: boolean; data: T; message?: string };
+export type BawEnvelope<T> = {
+  success: boolean;
+  data: T;
+  message?: string;
+  /** Failures arrive nested, not as a top-level message. */
+  error?: { code?: number; name?: string; message?: string };
+};
 
-export async function baw<T>(args: string[]): Promise<T> {
-  const full = [...args, '--json'];
+/**
+ * Failures worth retrying: the network was unreachable for a moment. Anything
+ * else — rejected auth, a bad parameter, an expired code — will fail the same
+ * way however many times we ask, and retrying only makes the user wait.
+ */
+const TRANSIENT = /REQUEST_TIMEOUT|DNS_RESOLVE_FAILED|NETWORK|ECONNRESET|ETIMEDOUT|EAI_AGAIN|socket hang up|fetch failed/i;
+const RETRY_DELAYS_MS = [700, 2000];
+
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+function describe(parsed: BawEnvelope<unknown>, fallback: string): string {
+  const e = parsed.error;
+  if (e) return [e.name, e.message].filter(Boolean).join(': ') || fallback;
+  return parsed.message ?? fallback;
+}
+
+async function once<T>(full: string[]): Promise<T> {
   let stdout: string;
   try {
     ({ stdout } = await exec('baw', full, { maxBuffer: 32 * 1024 * 1024 }));
@@ -52,8 +73,25 @@ export async function baw<T>(args: string[]): Promise<T> {
     throw new BawError(full, `expected JSON, got:\n${stdout.slice(0, 400)}`);
   }
 
-  if (parsed.success === false) throw new BawError(full, parsed.message ?? stdout);
+  if (parsed.success === false) throw new BawError(full, describe(parsed, stdout));
   return parsed.data;
+}
+
+export async function baw<T>(args: string[]): Promise<T> {
+  const full = [...args, '--json'];
+
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await once<T>(full);
+    } catch (err) {
+      const retryable =
+        err instanceof BawError &&
+        TRANSIENT.test(err.raw) &&
+        attempt < RETRY_DELAYS_MS.length;
+      if (!retryable) throw err;
+      await wait(RETRY_DELAYS_MS[attempt]!);
+    }
+  }
 }
 
 export class BawSignedOut extends Error {

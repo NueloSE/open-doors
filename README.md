@@ -77,6 +77,7 @@ claude mcp add binance-mcp-server --transport http https://agent.binance.com/mcp
 | `DNS_RESOLVE_FAILED` on `binance.com` | Your resolver is filtering Binance. Point DNS at `1.1.1.1` / `8.8.8.8`. |
 | Scan says the wallet is not connected | Correct behaviour — it refuses to report a clean wallet it could not read. Re-run `baw auth signin`. |
 | `AUTH_REJECTED` during sign-in | The pairing code expired (~5 min). Start a fresh `baw auth signin`, don't retry the old id. |
+| `REQUEST_TIMEOUT` | A transient network blip. Reads retry twice with backoff before giving up; if it still fails, the network is genuinely down. Offline modes (`--demo`, `--fixture`) work regardless. |
 
 ## The problem
 
