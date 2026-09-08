@@ -20,28 +20,63 @@ Agent OS Mini Hackathon.
 *Real output from a live wallet on BSC. Three ordinary swaps left three standing
 unlimited approvals behind — one of them over the whole USDT balance.*
 
-## Reviewers: two ways to try it
+## Try it — three levels, pick one
 
-**Zero setup — 30 seconds, no wallet, no keys:**
+### 1. No wallet, no keys, no setup — 30 seconds
 
 ```bash
-git clone <this repo> && cd open-doors && npm install
+git clone https://github.com/<your-username>/open-doors
+cd open-doors && npm install
 npx tsx src/cli.ts scan --demo
 ```
 
-**On your own wallet — read-only, no risk:**
+Replays a real captured wallet (address redacted). Nothing to sign in to, nothing to fund.
+
+### 2. On your own wallet — read-only
+
+Needs the Binance Agentic Wallet CLI and an MPC wallet created in the Binance app:
 
 ```bash
+npm install -g @binance/agentic-wallet     # the skill installs this lazily; do it directly
+baw auth signin --json                     # open the link, check the pairing code, confirm in the app
+baw wallet status --json                   # must say CONNECTED — this, not the app screen, is the truth
 npx tsx src/cli.ts scan
 ```
 
-`scan` only reads. It calls `wallet chains`, `wallet balance`, `approvals list` and
-`approvals detail` and writes nothing. If you already have a Binance Agentic Wallet, point it at
-yours and it will tell you something true about it in about ten seconds — most active wallets have
-approvals nobody has looked at.
+`scan` only reads. It calls `wallet chains`, `wallet balance`, `approvals list` and `approvals
+detail` and writes nothing. Point it at your own wallet and it will tell you something true about it
+in about ten seconds.
 
-The only command that changes anything is `close`, which confirms every single revoke individually
-and refuses to run at all in `--demo` mode.
+### 3. As an agent skill — how it is meant to be used
+
+```bash
+npx skills add https://github.com/<your-username>/open-doors
+```
+
+Then talk to your agent normally:
+
+> "What can spend my money right now?"
+> "Why is that top one dangerous?"
+> "Close the critical ones."
+
+The agent routes plain language to the right command, reads the ranking back in words, and confirms
+with you before revoking anything. The CLI is the engine; the conversation is the interface.
+
+Optionally connect the Binance MCP Server too, and the scan will also show what approvals *cannot*
+reach:
+
+```bash
+claude mcp add binance-mcp-server --transport http https://agent.binance.com/mcp/agentic
+```
+
+### Troubleshooting
+
+| Symptom | Cause |
+|---|---|
+| `zsh: command not found: baw` | The skill declares `baw` as a lazy install. Run `npm install -g @binance/agentic-wallet`. |
+| `DNS_RESOLVE_FAILED` on `binance.com` | Your resolver is filtering Binance. Point DNS at `1.1.1.1` / `8.8.8.8`. |
+| Scan says the wallet is not connected | Correct behaviour — it refuses to report a clean wallet it could not read. Re-run `baw auth signin`. |
+| `AUTH_REJECTED` during sign-in | The pairing code expired (~5 min). Start a fresh `baw auth signin`, don't retry the old id. |
 
 ## The problem
 
@@ -88,45 +123,24 @@ is already an authenticated MCP client, so it reads the sub-account balance and 
 via `--cex-balance`. That keeps OAuth out of the tool and keeps the tool deterministic and testable.
 The flag is optional — the scan is complete without it.
 
-## Install
+## Command reference
 
 ```bash
-# 1. Binance Agentic Wallet (needs an MPC wallet created in the Binance app first)
-npx skills add binance/binance-skills-hub/skills/binance-web3/binance-agentic-wallet
-# then, to your agent: "Sign in to Binance Agentic Wallet"
-
-# 2. Open Doors
-git clone <this repo> && cd open-doors
-npm install
+open-doors scan                        # rank every standing approval by money at risk
+open-doors scan --all                  # include low-risk ones
+open-doors scan --demo                 # replay a real captured wallet, no credentials
+open-doors scan --chain 56             # one chain only
+open-doors scan --material 30          # change the materiality floor (default $100)
+open-doors scan --cex-balance 250      # also show what approvals cannot reach
+open-doors scan --json                 # machine-readable, ids included
+open-doors explain <id>                # why this one is ranked where it is
+open-doors close <id>                  # close one, confirmed individually
+open-doors close --tier CRITICAL       # close a whole tier, still one confirmation each
 ```
 
-## Use
-
-```bash
-npm run scan                          # rank every standing approval
-npx tsx src/cli.ts scan --all         # include low-risk ones
-npx tsx src/cli.ts explain <id>       # why is this one dangerous
-npx tsx src/cli.ts close <id>         # close one, with confirmation
-npx tsx src/cli.ts close --tier CRITICAL
-npx tsx src/cli.ts scan --cex-balance 250   # also show what approvals cannot reach
-```
-
-Or just talk to your agent — the skill routes plain language:
-
-> "What can spend my money right now?"
-> "Close the critical ones."
-
-### Try it without a wallet
-
-```bash
-npx tsx src/cli.ts scan --demo                             # replay a real captured wallet
-npx tsx src/cli.ts scan --fixture fixtures/illustrative.json --material 100
-```
-
-`--demo` replays `fixtures/live-capture.json`, a genuine capture from a live BSC wallet with the
-address redacted. `illustrative.json` is synthetic and exists to show the full range of signals the
-model reads — a high-risk unverified spender, a never-used approval, differing ages — which a fresh
-wallet simply does not have.
+`fixtures/illustrative.json` is synthetic and shows the full range of signals the model reads — a
+high-risk unverified spender, a never-used approval, differing ages — which a fresh wallet does not
+have. Run it with `--fixture fixtures/illustrative.json --material 100`.
 
 ## Closing a door is not instant
 
