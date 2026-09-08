@@ -18,13 +18,17 @@ reachable today**, and closes the ones the user chooses.
 
 | User says | Run |
 |---|---|
-| "What can spend my money?" / "check my approvals" / "am I exposed?" | `open-doors scan` |
-| "Show everything, including safe ones" | `open-doors scan --all` |
+| "What can spend my money?" / "check my approvals" / "am I exposed?" | `open-doors` |
+| "Show everything, including safe ones" | `open-doors --all` |
 | "Explain that one" / "why is that risky?" | `open-doors explain <id>` |
-| "Close the dangerous ones" / "revoke that" | `open-doors close --tier CRITICAL` or `close <id>` |
+| "Close the dangerous ones" / "revoke that" | `open-doors close <id>`, or `close --tier CRITICAL` |
+| "Show me an example" / "I don't have a wallet yet" | `open-doors --demo` |
 | "Only check BSC" | add `--chain 56` |
 
-Get ids from `open-doors scan --json`.
+`scan` is the default, so bare `open-doors` is the scan.
+
+**Ids are long; a unique prefix is enough.** `open-doors explain 56:0x55d3` works. Take prefixes
+from `open-doors --json`, and never read a full id aloud to the user — it is noise.
 
 ## Before running
 
@@ -74,7 +78,9 @@ warnings. See `references/scoring.md`.
 
 - Lead with the headline: how many open doors, how much is reachable, what the worst one is.
 - Report dollars, not scores. "reaches $1,240" is actionable; "danger 5.8" is not.
-- Show the full contract address alongside any token symbol — truncated addresses cannot be verified.
+- The table truncates addresses to stay readable. When the user needs to verify one — before
+  closing, or when they ask who a spender is — run `open-doors explain <id>`, which prints the full
+  token and spender addresses. Do not read truncated addresses back as if they were complete.
 - If nothing is found, say so as a clear result, not an error. It is the normal outcome for a fresh
   wallet and it is good news.
 

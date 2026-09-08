@@ -35,6 +35,20 @@ export function why(a: Approval): string {
   return a.reasons.length ? a.reasons.join(' · ') : 'no elevated signals';
 }
 
+/**
+ * Full, verifiable identity of an approval.
+ *
+ * Truncated addresses cannot be checked against anything, so anywhere a user
+ * might act on this — or an agent might repeat it — the whole address is shown.
+ */
+export function identity(a: Approval): string[] {
+  return [
+    `Token    ${a.tokenSymbol}  ${a.tokenContract}`,
+    `Spender  ${a.spenderName?.trim() ?? 'unknown'}  ${a.spender}`,
+    `Chain    ${a.chainName} (${a.chainId})    Type  ${a.type}`,
+  ];
+}
+
 /** One-sentence summary of a single approval, used by `explain <id>`. */
 export function sentence(a: Approval): string {
   const who = a.spenderName?.trim() || shortAddr(a.spender);

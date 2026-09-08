@@ -2,7 +2,7 @@
 import { collect, enrichExpiry } from './collect.js';
 import { score, totals } from './score.js';
 import { renderScan } from './render.js';
-import { sentence, usd } from './explain.js';
+import { sentence, usd, identity } from './explain.js';
 import { closeDoors } from './revoke.js';
 import { BawMissing, BawSignedOut } from './baw.js';
 import type { Approval, Tier } from './types.js';
@@ -101,9 +101,12 @@ async function main() {
     const { ranked } = await load(args);
     const a = ranked.find((x) => x.id === id || x.id.startsWith(id));
     if (!a) { console.error(`No approval matching "${id}".`); process.exitCode = 1; return; }
-    console.log(`\n  ${sentence(a)}`);
-    console.log(`  Reachable today: ${usd(a.exposureUsd)}   Tier: ${a.tier}`);
-    console.log(`  Why: ${a.reasons.join(' · ') || 'no elevated signals'}\n`);
+    console.log(`\n  ${sentence(a)}\n`);
+    for (const line of identity(a)) console.log(`    ${line}`);
+    console.log(`    Scope    ${a.isUnlimited ? 'unlimited' : a.approvedAmount}    Reaches  ${usd(a.exposureUsd)}`);
+    console.log(`    Tier     ${a.tier}`);
+    console.log(`    Why      ${a.reasons.join(' · ') || 'no elevated signals'}`);
+    console.log(`\n  Close it with:  open-doors close ${a.id.slice(0, 20)}\n`);
     return;
   }
 
