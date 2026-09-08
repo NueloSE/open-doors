@@ -1,0 +1,119 @@
+{
+  "_note": "Real capture from a live Binance Agentic Wallet on BSC, 8 Sep 2026. Wallet address redacted. Three approvals created by three ordinary swaps \u2014 this is what a normal wallet looks like after a few trades. expireTime values were read from `approvals detail` for each row.",
+  "approvals": [
+    {
+      "id": "6a9facca6f54489f2a1c3e0d",
+      "offset": "1",
+      "address": "0x0000000000000000000000000000000000000000",
+      "binanceChainId": "56",
+      "networkName": "BNB Smart Chain",
+      "networkSymbol": "BSC",
+      "tokenContract": "0xcE24439F2D9C6a2289F741120FE202248B666666",
+      "tokenSymbol": "U",
+      "tokenIcon": "/images/web3-data/public/token/logos/3b0d18d0ced84b2ba98f956771c840c4.jpg",
+      "tokenName": "United Stables",
+      "tokenDecimals": 18,
+      "amount": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+      "spender": "0xb300000b72DEAEb607a12d5f54773D1C19c7028d",
+      "spenderIcon": "/images/web3-data/public/protocol/logos/0630ddb25fcd498ebc004cca2658534c.png",
+      "spenderName": "Binance Wallet",
+      "status": "on-chain",
+      "riskyLevel": 0,
+      "type": "approve",
+      "time": 1788849352600,
+      "permit2ContractAddress": null,
+      "noInteractive": false,
+      "expireTime": null
+    },
+    {
+      "id": "6a9faca33b3ef4c0a05e310f",
+      "offset": "2",
+      "address": "0x0000000000000000000000000000000000000000",
+      "binanceChainId": "56",
+      "networkName": "BNB Smart Chain",
+      "networkSymbol": "BSC",
+      "tokenContract": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+      "tokenSymbol": "USDC",
+      "tokenIcon": "/images/web3-data/public/token/logos/c37a0d404c304e10bc9f966a1fa1d6eb.png",
+      "tokenName": "USDC Token",
+      "tokenDecimals": 18,
+      "amount": "115792089237316195423570985008687907853269984665640564039456084007913129639935",
+      "spender": "0xb300000b72DEAEb607a12d5f54773D1C19c7028d",
+      "spenderIcon": "/images/web3-data/public/protocol/logos/0630ddb25fcd498ebc004cca2658534c.png",
+      "spenderName": "Binance Wallet",
+      "status": "on-chain",
+      "riskyLevel": 0,
+      "type": "approve",
+      "time": 1788849314800,
+      "permit2ContractAddress": null,
+      "noInteractive": false,
+      "expireTime": null
+    },
+    {
+      "id": "6a9fa9716f54489f2a1c20f2",
+      "offset": "3",
+      "address": "0x0000000000000000000000000000000000000000",
+      "binanceChainId": "56",
+      "networkName": "BNB Smart Chain",
+      "networkSymbol": "BSC",
+      "tokenContract": "0x55d398326f99059fF775485246999027B3197955",
+      "tokenSymbol": "USDT",
+      "tokenIcon": "/images/web3-data/public/token/logos/f8bbb8f921f54002ad7d28f8b4e199cd.png",
+      "tokenName": "Tether USDT",
+      "tokenDecimals": 18,
+      "amount": "115792089237316195423570985008687907853269984665640564039455584007913129639935",
+      "spender": "0xb300000b72DEAEb607a12d5f54773D1C19c7028d",
+      "spenderIcon": "/images/web3-data/public/protocol/logos/0630ddb25fcd498ebc004cca2658534c.png",
+      "spenderName": "Binance Wallet",
+      "status": "on-chain",
+      "riskyLevel": 0,
+      "type": "approve",
+      "time": 1788848496200,
+      "permit2ContractAddress": null,
+      "noInteractive": false,
+      "expireTime": null
+    }
+  ],
+  "balances": [
+    {
+      "symbol": "USDC",
+      "address": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+      "binanceChainId": "56",
+      "balance": "0.497119057542057936",
+      "price": "0.999919076731575326334147603556104897",
+      "value": "0.49707882904312545"
+    },
+    {
+      "symbol": "U",
+      "address": "0xcE24439F2D9C6a2289F741120FE202248B666666",
+      "binanceChainId": "56",
+      "balance": "0.502112064914324178",
+      "price": "0.9991824251752932",
+      "value": "0.5017015507308686"
+    },
+    {
+      "symbol": "BNB",
+      "address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      "binanceChainId": "56",
+      "balance": "0.008655688512051888",
+      "price": "744.790166216493194244202649835373492534",
+      "value": "6.446671685609316"
+    },
+    {
+      "symbol": "USD1",
+      "address": "0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d",
+      "binanceChainId": "56",
+      "balance": "0.999654510158647418",
+      "price": "0.999562968374126824019911691549582396",
+      "value": "0.9992176295227613"
+    },
+    {
+      "symbol": "USDT",
+      "address": "0x55d398326f99059fF775485246999027B3197955",
+      "binanceChainId": "56",
+      "balance": "40",
+      "price": "0.999877139217492228170262171026231211",
+      "value": "39.995085568699686"
+    }
+  ]
+}

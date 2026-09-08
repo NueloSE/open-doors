@@ -1,5 +1,5 @@
 {
-  "_note": "Illustrative shapes mirroring `baw approvals list` and `baw wallet balance`. Used for offline runs and tests; replace with real captures from your own wallet.",
+  "_note": "Synthetic. Shows the full range of signals the model reads \u2014 a high-risk unverified spender, a never-used approval, differing ages \u2014 which a fresh wallet does not exhibit. Use with --fixture. The bundled --demo data is a real capture instead.",
   "approvals": [
     {
       "tokenSymbol": "USDT",

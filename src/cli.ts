@@ -10,13 +10,13 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 /** Bundled sample, resolved relative to this file so it works from any cwd. */
-const DEMO_FIXTURE = join(dirname(fileURLToPath(import.meta.url)), '..', 'fixtures', 'demo.json');
+const DEMO_FIXTURE = join(dirname(fileURLToPath(import.meta.url)), '..', 'fixtures', 'live-capture.json');
 
 const HELP = `
 open-doors — see what can spend your tokens without asking, and close it.
 
   open-doors scan                    rank every standing approval by money at risk
-  open-doors scan --demo             run on bundled sample data, no wallet needed
+  open-doors scan --demo             run on a real captured wallet, no wallet needed
   open-doors scan --all              include low-risk approvals
   open-doors explain <id>            explain one approval in full
   open-doors close <id>              close one approval
@@ -25,7 +25,7 @@ open-doors — see what can spend your tokens without asking, and close it.
 Options
   --chain <id>       limit to one chain (e.g. 56 for BSC)
   --material <usd>   ignore approvals reaching less than this (default 100)
-  --demo             use the bundled sample instead of a wallet
+  --demo             replay a real captured wallet instead of live data
   --fixture <path>   read a saved JSON capture instead of the wallet
   --cex-balance <usd>  Agentic sub-account balance from the Binance MCP Server,
                        shown as funds approvals cannot reach
@@ -81,7 +81,7 @@ async function main() {
     const { ranked, totals: t } = await load(args);
     if (args.json) { console.log(JSON.stringify({ totals: t, approvals: ranked }, null, 2)); return; }
     if (args.demo === true) {
-      console.log('\n  Sample data — not your wallet. Run without --demo to scan your own.');
+      console.log('\n  Replaying a real captured wallet — not yours. Run without --demo to scan your own.');
     }
     const cex = typeof args['cex-balance'] === 'string' ? Number(args['cex-balance']) : undefined;
     process.stdout.write(
@@ -107,7 +107,7 @@ async function main() {
 
   if (cmd === 'close') {
     if (args.demo === true) {
-      console.error('\n  --demo is sample data. There is nothing real to close.\n' +
+      console.error('\n  --demo replays a capture. There is nothing live to close.\n' +
                     '  Run `open-doors scan` against your own wallet first.\n');
       process.exitCode = 1;
       return;

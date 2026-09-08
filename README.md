@@ -6,17 +6,19 @@ Built on [Binance Agent OS](https://developers.binance.com/en/docs/agent-native/
 Agent OS Mini Hackathon.
 
 ```
-  3 open doors · $1,462.10 reachable · 1 critical
-  Worst: unlimited USDT to an unknown contract — Spender contract is unverified · never used · unlimited · never expires · granted 251 days ago
 
-  TIER      REACHABLE  TOKEN  SPENDER                  CHAIN  WHY
-  CRITICAL  $1,240.00  USDT   0x9f2c…11ab              BSC    Spender contract is unverified · never used · unlimited · never expires ·…
+  3 open doors · $41.00 reachable
+  Worst: unlimited USDT to Binance Wallet — unlimited · never expires
 
-  HIGH        $180.00  USDC   PancakeSwap 0x10ED…024E  BSC    unlimited · never expires · granted 104 days ago
-  REVIEW       $42.10  CAKE   0x77aa…9e01              BSC    unlimited · never expires
+  TIER    REACHABLE  TOKEN  SPENDER                     CHAIN  WHY
+  HIGH       $40.00  USDT   Binance Wallet 0xb300…028d  BSC    unlimited · never expires
 
-  Close the critical ones:  open-doors close --tier CRITICAL
+  REVIEW      $0.50  USDC   Binance Wallet 0xb300…028d  BSC    unlimited · never expires
+  REVIEW      $0.50  U      Binance Wallet 0xb300…028d  BSC    unlimited · never expires
 ```
+
+*Real output from a live wallet on BSC. Three ordinary swaps left three standing
+unlimited approvals behind — one of them over the whole USDT balance.*
 
 ## Reviewers: two ways to try it
 
@@ -117,8 +119,14 @@ Or just talk to your agent — the skill routes plain language:
 ### Try it without a wallet
 
 ```bash
-npx tsx src/cli.ts scan --fixture fixtures/demo.json
+npx tsx src/cli.ts scan --demo                             # replay a real captured wallet
+npx tsx src/cli.ts scan --fixture fixtures/illustrative.json --material 100
 ```
+
+`--demo` replays `fixtures/live-capture.json`, a genuine capture from a live BSC wallet with the
+address redacted. `illustrative.json` is synthetic and exists to show the full range of signals the
+model reads — a high-risk unverified spender, a never-used approval, differing ages — which a fresh
+wallet simply does not have.
 
 ## Closing a door is not instant
 
