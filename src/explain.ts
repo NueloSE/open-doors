@@ -30,6 +30,20 @@ export function usd(n: number): string {
   return `$${n.toFixed(2)}`;
 }
 
+/**
+ * Shortest prefix of each id that still identifies it uniquely, so nobody has
+ * to copy a hundred-character string to act on a row.
+ */
+export function shortIds(ids: string[]): Map<string, string> {
+  const out = new Map<string, string>();
+  for (const id of ids) {
+    let len = 8;
+    while (len < id.length && ids.filter((o) => o.startsWith(id.slice(0, len))).length > 1) len += 2;
+    out.set(id, id.slice(0, Math.min(len, id.length)));
+  }
+  return out;
+}
+
 /** The condensed reason chain used in the table's WHY column. */
 export function why(a: Approval): string {
   return a.reasons.length ? a.reasons.join(' · ') : 'no elevated signals';

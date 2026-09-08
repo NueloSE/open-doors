@@ -2,7 +2,7 @@
 import { collect, enrichExpiry } from './collect.js';
 import { score, totals } from './score.js';
 import { renderScan } from './render.js';
-import { sentence, usd, identity } from './explain.js';
+import { sentence, usd, identity, shortIds } from './explain.js';
 import { closeDoors } from './revoke.js';
 import { BawMissing, BawSignedOut } from './baw.js';
 import type { Approval, Tier } from './types.js';
@@ -85,6 +85,27 @@ async function gather(args: Args, fixture: string | undefined, prog: ReturnType<
 
 const TIERS: Tier[] = ['CRITICAL', 'HIGH', 'REVIEW', 'OK'];
 
+/**
+ * Asking "which one?" is only useful alongside the answer. Rather than telling
+ * the user to go and find an id, show the rows with a ready-to-run command.
+ */
+function listChoices(ranked: Approval[], verb: 'explain' | 'close'): void {
+  const open = ranked.filter((a) => a.tier !== 'OK');
+  if (open.length === 0) {
+    console.log('\n  No open doors — nothing to ' + verb + '.\n');
+    return;
+  }
+  const short = shortIds(open.map((a) => a.id));
+  console.log(`\n  Which approval? Any of these:\n`);
+  for (const a of open) {
+    console.log(
+      `    ${a.tier.padEnd(8)} ${usd(a.exposureUsd).padStart(9)}  ${a.tokenSymbol.padEnd(6)}` +
+        `  open-doors ${verb} ${short.get(a.id)}`,
+    );
+  }
+  console.log('');
+}
+
 async function main() {
   const args = parse(process.argv.slice(2));
   const cmd = args._[0] ?? 'scan';
@@ -109,8 +130,8 @@ async function main() {
 
   if (cmd === 'explain') {
     const id = args._[1];
-    if (!id) { console.error('Which approval? Pass an id from `open-doors scan --json`.'); process.exitCode = 1; return; }
     const { ranked } = await load(args);
+    if (!id) { listChoices(ranked, 'explain'); process.exitCode = 1; return; }
     const a = ranked.find((x) => x.id === id || x.id.startsWith(id));
     if (!a) { console.error(`No approval matching "${id}".`); process.exitCode = 1; return; }
     console.log(`\n  ${sentence(a)}\n`);
@@ -138,7 +159,7 @@ async function main() {
       targets = ranked.filter((a) => a.tier === tier);
     } else {
       const id = args._[1];
-      if (!id) { console.error('Pass an approval id, or --tier CRITICAL.'); process.exitCode = 1; return; }
+      if (!id) { listChoices(ranked, 'close'); process.exitCode = 1; return; }
       targets = ranked.filter((a) => a.id === id || a.id.startsWith(id));
     }
 
