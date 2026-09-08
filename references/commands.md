@@ -7,10 +7,22 @@ Every call appends `--json`.
 ```bash
 baw wallet status --json
 baw wallet chains --json
-baw wallet balance  [--binanceChainId <id>] --json
-baw approvals list  [--binanceChainId <id>] [--spender <addr>] --json
+baw wallet balance  [--symbol <sym>] [--tokenAddress <addr>] [--binanceChainId <id>] --json
+baw approvals list  [--spender <addr>] [--filterTypes <types>] [--limit <n>] [--offset <cursor>] --json
 baw approvals detail --binanceChainId <id> --tokenContract <addr> --spender <addr> --type <approve|permit2> --json
 ```
+
+Verified against `baw` 1.9.0, which differs from the published docs in three ways
+that matter:
+
+- **`approvals list` takes no `--binanceChainId`.** It returns every chain at once;
+  filter client-side.
+- **`--offset` is an opaque cursor**, not a numeric index. Page until a short page
+  or an unchanged cursor.
+- **`--filterTypes` exposes a `medium_risk` tier** (`high_risk`, `medium_risk`,
+  `non_interactive`, `others`) that the docs do not mention.
+
+`wallet chains` returns `name` / `simpleName` rather than `chainName`.
 
 `approvals list` returns `data.list[]` with:
 

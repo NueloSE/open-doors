@@ -51,7 +51,11 @@ export function normaliseApproval(raw: Raw, fallbackChain?: { id: string; name: 
     type,
     isUnlimited,
     approvedAmount: amount,
-    riskyLevel: risky === 'high' ? 'high' : risky === 'low' ? 'low' : null,
+    riskyLevel:
+      risky === 'high' ? 'high'
+      : risky === 'medium' ? 'medium'
+      : risky === 'low' ? 'low'
+      : null,
     riskyMsg: str(raw.riskyMsg),
     noInteractive: typeof raw.noInteractive === 'boolean' ? raw.noInteractive : null,
     approveTime: num(raw.approveTime) ?? 0,

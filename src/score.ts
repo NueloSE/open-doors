@@ -25,6 +25,7 @@ export const DEFAULTS = {
   materialUsd: 100,
   weights: {
     riskyHigh: 2.5,
+    riskyMedium: 1.7,
     unlimited: 1.8,
     neverUsed: 1.6,
     neverExpires: 1.3,
@@ -69,6 +70,9 @@ export function danger(
   if (a.riskyLevel === 'high') {
     d *= w.riskyHigh;
     reasons.push(a.riskyMsg?.trim() || 'flagged high risk by Binance');
+  } else if (a.riskyLevel === 'medium') {
+    d *= w.riskyMedium;
+    reasons.push(a.riskyMsg?.trim() || 'flagged medium risk by Binance');
   }
   if (a.noInteractive === true) {
     d *= w.neverUsed;

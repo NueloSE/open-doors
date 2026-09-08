@@ -39,7 +39,7 @@ export type Approval = {
   /** Human-readable approved amount, or the literal "unlimited". */
   approvedAmount: string;
 
-  riskyLevel: 'low' | 'high' | null;
+  riskyLevel: 'low' | 'medium' | 'high' | null;
   /** NULLABLE — e.g. "Spender contract is unverified". */
   riskyMsg: string | null;
   /** NULLABLE — true means the wallet has never interacted with this spender. */
