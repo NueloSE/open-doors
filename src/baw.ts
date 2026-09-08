@@ -21,10 +21,14 @@ export class BawError extends Error {
 export class BawMissing extends Error {
   constructor() {
     super(
-      'The `baw` CLI was not found.\n' +
-        'Install it with:\n' +
-        '  npx skills add binance/binance-skills-hub/skills/binance-web3/binance-agentic-wallet\n' +
-        'Then sign in by asking your agent: "Sign in to Binance Agentic Wallet".',
+      'The `baw` CLI was not found — it is what reads your wallet.\n\n' +
+        '  npm install -g @binance/agentic-wallet\n' +
+        '  baw auth signin --json\n\n' +
+        'Adding the Binance skill alone is not enough: it declares `baw` as a lazy\n' +
+        'install, so the binary only appears once something asks for it. Install it\n' +
+        'directly with the line above.\n\n' +
+        'No wallet to hand? See it work on a real captured one:\n' +
+        '  open-doors --demo',
     );
     this.name = 'BawMissing';
   }
