@@ -134,6 +134,7 @@ The flag is optional — the scan is complete without it.
 ## Command reference
 
 ```bash
+open-doors signin                      # sign in to Binance Agentic Wallet
 open-doors                             # rank every standing approval by money at risk
 open-doors --all                       # include the low-risk ones it filtered out
 open-doors --demo                      # replay a real captured wallet, no credentials

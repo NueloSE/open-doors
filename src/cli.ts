@@ -8,6 +8,7 @@ import { BawMissing, BawSignedOut } from './baw.js';
 import type { Approval, Tier } from './types.js';
 import { progress } from './progress.js';
 import { readCache, writeCache, ageSeconds } from './cache.js';
+import { signin } from './signin.js';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -17,6 +18,7 @@ const DEMO_FIXTURE = join(dirname(fileURLToPath(import.meta.url)), '..', 'fixtur
 const HELP = `
 open-doors — see what can spend your tokens without asking, and close it.
 
+  open-doors signin                  sign in to Binance Agentic Wallet
   open-doors scan                    rank every standing approval by money at risk
   open-doors scan --demo             run on a real captured wallet, no wallet needed
   open-doors scan --all              include low-risk approvals
@@ -134,6 +136,8 @@ async function main() {
   const cmd = args._[0] ?? 'scan';
 
   if (args.help || cmd === 'help') { console.log(HELP); return; }
+
+  if (cmd === 'signin') { process.exitCode = await signin(); return; }
 
   if (cmd === 'scan') {
     const { ranked, totals: t, cachedAgeS } = await load(args);

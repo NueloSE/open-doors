@@ -46,8 +46,12 @@ attempt to work around it:
 
 ```
 npm install -g @binance/agentic-wallet
-baw auth signin --json
+open-doors signin
 ```
+
+`open-doors signin` runs both halves of the flow — `auth signin` creates the pairing and
+`auth verify` completes it. Approving on the phone with nothing running `verify` leaves the user
+stuck: the Binance app reports success while the machine stays signed out.
 
 Adding the Binance skill alone is not enough — it declares `baw` as a lazy install, so the binary
 does not appear until something asks for it. Install it directly.
