@@ -155,6 +155,7 @@ export function renderRevoked(a: Approval, txHash: string | null, status: string
     dim('  The approval stays active until it confirms on-chain.'),
     dim('  Track it with:  baw wallet tx-history --json'),
     '',
+    '',
   ]
     .filter(Boolean)
     .join('\n');
