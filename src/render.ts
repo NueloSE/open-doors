@@ -38,7 +38,7 @@ export type RenderOptions = {
   cexBalanceUsd?: number;
   /** Seconds since the underlying scan, when replayed from cache. */
   cachedAgeS?: number;
-  /** Draw rules between columns and rows. */
+  /** Draw rules between columns and rows. Default on. */
   borders?: boolean;
 };
 
@@ -69,6 +69,9 @@ export function renderScan(approvals: Approval[], t: {
     why: truncate(why(a), whyWidth),
   }));
 
+  // Size WHY to its content rather than its cap, so a short reason chain does
+  // not leave half the table empty.
+  const whyCol = Math.max(3, ...rows.map((r) => r.why.length));
   const w = {
     tier: Math.max(4, ...rows.map((r) => r.tier.length)),
     reach: Math.max(9, ...rows.map((r) => r.reach.length)),
@@ -77,9 +80,9 @@ export function renderScan(approvals: Approval[], t: {
     chain: Math.max(5, ...rows.map((r) => r.chain.length)),
   };
 
-  const bordered = opts.borders === true;
+  const bordered = opts.borders !== false;
   const sep = bordered ? dim(' │ ') : '  ';
-  const widths = [w.tier, w.reach, w.token, w.spender, w.chain, whyWidth];
+  const widths = [w.tier, w.reach, w.token, w.spender, w.chain, whyCol];
   const rule = (l: string, m: string, r: string) =>
     dim(l + widths.map((n) => '─'.repeat(n + 2)).join(m) + r);
 
@@ -93,7 +96,7 @@ export function renderScan(approvals: Approval[], t: {
           pad('TOKEN', w.token),
           pad('SPENDER', w.spender),
           pad('CHAIN', w.chain),
-          bordered ? pad('WHY', whyWidth) : 'WHY',
+          bordered ? pad('WHY', whyCol) : 'WHY',
         ].join(sep),
       ) + (bordered ? dim(' │') : ''),
   );
@@ -109,7 +112,7 @@ export function renderScan(approvals: Approval[], t: {
           pad(r.token, w.token),
           dim(pad(r.spender, w.spender)),
           dim(pad(r.chain, w.chain)),
-          dim(bordered ? pad(r.why, whyWidth) : r.why),
+          dim(bordered ? pad(r.why, whyCol) : r.why),
         ].join(sep) + (bordered ? dim(' │') : ''),
     );
     if (bordered && i < rows.length - 1) out.push('  ' + rule('├', '┼', '┤'));

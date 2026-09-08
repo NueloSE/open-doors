@@ -10,11 +10,15 @@ Agent OS Mini Hackathon.
   3 open doors · $41.00 reachable
   Worst: unlimited USDT to Binance Wallet — unlimited · never expires
 
-  TIER    REACHABLE  TOKEN  SPENDER                     CHAIN  WHY
-  HIGH       $40.00  USDT   Binance Wallet 0xb300…028d  BSC    unlimited · never expires
-
-  REVIEW      $0.50  USDC   Binance Wallet 0xb300…028d  BSC    unlimited · never expires
-  REVIEW      $0.50  U      Binance Wallet 0xb300…028d  BSC    unlimited · never expires
+  ┌────────┬───────────┬───────┬────────────────────────────┬───────┬───────────────────────────┐
+  │ TIER   │ REACHABLE │ TOKEN │ SPENDER                    │ CHAIN │ WHY                       │
+  ├────────┼───────────┼───────┼────────────────────────────┼───────┼───────────────────────────┤
+  │ HIGH   │    $40.00 │ USDT  │ Binance Wallet 0xb300…028d │ BSC   │ unlimited · never expires │
+  ├────────┼───────────┼───────┼────────────────────────────┼───────┼───────────────────────────┤
+  │ REVIEW │     $0.50 │ USDC  │ Binance Wallet 0xb300…028d │ BSC   │ unlimited · never expires │
+  ├────────┼───────────┼───────┼────────────────────────────┼───────┼───────────────────────────┤
+  │ REVIEW │     $0.50 │ U     │ Binance Wallet 0xb300…028d │ BSC   │ unlimited · never expires │
+  └────────┴───────────┴───────┴────────────────────────────┴───────┴───────────────────────────┘
 ```
 
 *Real output from a live wallet on BSC. Three ordinary swaps left three standing
@@ -134,7 +138,7 @@ open-doors                             # rank every standing approval by money a
 open-doors --all                       # include the low-risk ones it filtered out
 open-doors --demo                      # replay a real captured wallet, no credentials
 open-doors --chain 56                  # one chain only
-open-doors --borders                   # draw rules between columns and rows
+open-doors --no-borders                # drop the rules between columns and rows
 open-doors --fresh                     # re-read the wallet instead of reusing a recent scan
 open-doors --json                      # machine-readable, ids included
 open-doors explain <id>                # full identity and why it ranks where it does

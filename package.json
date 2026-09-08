@@ -1,6 +1,6 @@
 {
   "name": "open-doors",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Audit and close standing token approvals on Binance Agentic Wallet, ranked by money actually at risk.",
   "keywords": [
     "binance",
