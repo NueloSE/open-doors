@@ -46,7 +46,14 @@ export async function closeDoors(
     process.stdout.write(renderConfirm(a));
     const ok = opts.assumeYes || (await confirm('  Close it?'));
     if (!ok) {
-      process.stdout.write('  Skipped.\n');
+      // No TTY means nobody could have answered — say so, rather than letting an
+      // agent read "Skipped" as a decision the user made.
+      process.stdout.write(
+        process.stdin.isTTY
+          ? '  Skipped.\n'
+          : '  Skipped — nothing here can answer a prompt.\n' +
+            '  If the user has already confirmed, re-run with --yes.\n',
+      );
       continue;
     }
     try {

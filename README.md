@@ -1,9 +1,23 @@
-# Open Doors
+```
+   ██████  ██████  ███████ ███    ██     ██████   ██████   ██████  ██████  ███████
+  ██    ██ ██   ██ ██      ████   ██     ██   ██ ██    ██ ██    ██ ██   ██ ██
+  ██    ██ ██████  █████   ██ ██  ██     ██   ██ ██    ██ ██    ██ ██████  ███████
+  ██    ██ ██      ██      ██  ██ ██     ██   ██ ██    ██ ██    ██ ██   ██      ██
+   ██████  ██      ███████ ██   ████     ██████   ██████   ██████  ██   ██ ███████
+```
 
 **See what can spend your tokens without asking you again — and close it.**
 
-Built on [Binance Agent OS](https://developers.binance.com/en/docs/agent-native/mcp-server) for the
-Agent OS Mini Hackathon.
+An AI agent for [Binance Agent OS](https://developers.binance.com/en/docs/agent-native/mcp-server)
+that ranks standing token approvals by money actually at risk — not by how alarming they look.
+
+[![npm](https://img.shields.io/npm/v/open-doors?color=0f5460&label=npm)](https://www.npmjs.com/package/open-doors)
+[![license](https://img.shields.io/badge/license-MIT-0f5460)](LICENSE)
+[![node](https://img.shields.io/badge/node-%E2%89%A518-0f5460)](package.json)
+
+```bash
+npx open-doors --demo    # 30 seconds, no wallet, no keys
+```
 
 ```
 

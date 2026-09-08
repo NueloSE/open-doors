@@ -107,9 +107,20 @@ warnings. See `references/scoring.md`.
 
 ## Closing an approval
 
-1. **Confirm each one individually.** Never close in bulk without asking, and never infer consent.
-2. Show the user what they are giving up: token, spender, chain, type, scope, and reason.
-3. On success `baw` returns `status: BROADCASTED` with a `txHash`.
+**You are the confirmation step.** The CLI prompts when a person is at the terminal, but it cannot
+prompt through you — it has no stdin to read, so it skips and tells you so. That means:
+
+1. **Ask the user first, in the conversation.** Show them what they are giving up: token, spender,
+   chain, type, scope, and how much it reaches. Wait for a clear yes.
+2. **Then run it with `--yes`**, which tells the CLI the confirmation already happened:
+   ```
+   open-doors close <id> --yes
+   ```
+   Never pass `--yes` before the user has agreed. The flag does not mean "no confirmation needed";
+   it means "the human already said yes, somewhere the CLI cannot see."
+3. **One approval at a time.** Never close in bulk without asking about each, and never infer consent
+   from a general instruction like "clean this up" — come back with the list and ask.
+4. On success `baw` returns `status: BROADCASTED` with a `txHash`.
 4. **Say clearly that this is not yet done.** The transaction is broadcast, not confirmed, and the
    approval stays live until it confirms. Point the user at `baw wallet tx-history --json`.
 5. Suggest re-running `scan` after confirmation to show the door closed.
