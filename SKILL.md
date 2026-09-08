@@ -36,6 +36,26 @@ npx skills add binance/binance-skills-hub/skills/binance-web3/binance-agentic-wa
 ```
 Then: *"Sign in to Binance Agentic Wallet"*.
 
+## Optional: show what is safe, using the Binance MCP Server
+
+If the **Binance MCP Server** is connected, read the Agentic sub-account balance first and pass it
+in:
+
+```
+open-doors scan --cex-balance <usd>
+```
+
+The scan then states plainly that those funds are out of reach — approvals apply to the on-chain
+wallet only, and an exchange balance cannot be spent through one. Users who have just been shown a
+list of things that can take their money deserve to also know what cannot.
+
+Skip the flag if the MCP server is not connected. It is additive; the scan is complete without it.
+
+Connect with:
+```
+claude mcp add binance-mcp-server --transport http https://agent.binance.com/mcp/agentic
+```
+
 ## How the ranking works
 
 Two quantities are multiplied, both computed in code, never by a model:

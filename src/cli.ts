@@ -27,6 +27,8 @@ Options
   --material <usd>   ignore approvals reaching less than this (default 100)
   --demo             use the bundled sample instead of a wallet
   --fixture <path>   read a saved JSON capture instead of the wallet
+  --cex-balance <usd>  Agentic sub-account balance from the Binance MCP Server,
+                       shown as funds approvals cannot reach
   --json             machine-readable output
   --yes              skip per-approval confirmation (not recommended)
 `;
@@ -81,7 +83,13 @@ async function main() {
     if (args.demo === true) {
       console.log('\n  Sample data — not your wallet. Run without --demo to scan your own.');
     }
-    process.stdout.write(renderScan(ranked, t, { showAll: args.all === true }));
+    const cex = typeof args['cex-balance'] === 'string' ? Number(args['cex-balance']) : undefined;
+    process.stdout.write(
+      renderScan(ranked, t, {
+        showAll: args.all === true,
+        cexBalanceUsd: Number.isFinite(cex) ? cex : undefined,
+      }),
+    );
     return;
   }
 

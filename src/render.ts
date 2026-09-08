@@ -31,7 +31,12 @@ function truncate(s: string, n: number): string {
   return n <= 1 ? s.slice(0, n) : `${s.slice(0, n - 1)}…`;
 }
 
-export type RenderOptions = { showAll?: boolean; whyWidth?: number };
+export type RenderOptions = {
+  showAll?: boolean;
+  whyWidth?: number;
+  /** Agentic sub-account balance, read via the Binance MCP Server. */
+  cexBalanceUsd?: number;
+};
 
 export function renderScan(approvals: Approval[], t: {
   openDoors: number; reachableUsd: number; critical: number; hidden: number; worst: Approval | null;
@@ -99,6 +104,13 @@ export function renderScan(approvals: Approval[], t: {
   }
 
   out.push('');
+  if (typeof opts.cexBalanceUsd === 'number') {
+    out.push(
+      dim(`  ${usd(opts.cexBalanceUsd)} in your Agentic sub-account is out of reach — token approvals`),
+      dim('  apply to your on-chain wallet only. Exchange balances cannot be touched this way.'),
+      '',
+    );
+  }
   if (!opts.showAll && t.hidden > 0) {
     const s = t.hidden === 1 ? 'approval' : 'approvals';
     out.push(dim(`  +${t.hidden} low-risk ${s} not shown — run with --all`));

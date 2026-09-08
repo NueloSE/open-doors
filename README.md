@@ -81,6 +81,11 @@ loop, so it is reproducible and you can read the logic rather than trust a numbe
 | **Binance Agentic Wallet** (`baw`) | `wallet chains`, `wallet balance`, `approvals list`, `approvals detail`, `approvals revoke` |
 | **Binance MCP Server** | Agentic sub-account balance — shown as funds approvals *cannot* reach |
 
+The MCP call is made by the **agent**, not by this CLI, which is how MCP is meant to work: the agent
+is already an authenticated MCP client, so it reads the sub-account balance and passes the figure in
+via `--cex-balance`. That keeps OAuth out of the tool and keeps the tool deterministic and testable.
+The flag is optional — the scan is complete without it.
+
 ## Install
 
 ```bash
@@ -101,6 +106,7 @@ npx tsx src/cli.ts scan --all         # include low-risk ones
 npx tsx src/cli.ts explain <id>       # why is this one dangerous
 npx tsx src/cli.ts close <id>         # close one, with confirmation
 npx tsx src/cli.ts close --tier CRITICAL
+npx tsx src/cli.ts scan --cex-balance 250   # also show what approvals cannot reach
 ```
 
 Or just talk to your agent — the skill routes plain language:
