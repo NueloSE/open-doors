@@ -32,13 +32,30 @@ from `open-doors --json`, and never read a full id aloud to the user — it is n
 
 ## Before running
 
-The wallet must be signed in. If `baw` is missing or signed out, say so plainly and give the user
-the install line — do not attempt to work around it:
+Two binaries are needed. Check both before reporting a failure as anything else.
+
+**1. `open-doors` itself** — this skill drives it. If it is missing:
 
 ```
-npx skills add binance/binance-skills-hub/skills/binance-web3/binance-agentic-wallet
+npm install -g open-doors
 ```
-Then: *"Sign in to Binance Agentic Wallet"*.
+
+**2. `baw`, the Binance Agentic Wallet CLI** — it is what reads the wallet, and the wallet must be
+signed in. If it is missing or signed out, say so plainly and give the user the line below. Do not
+attempt to work around it:
+
+```
+npm install -g @binance/agentic-wallet
+baw auth signin --json
+```
+
+Adding the Binance skill alone is not enough — it declares `baw` as a lazy install, so the binary
+does not appear until something asks for it. Install it directly.
+
+Confirm with `baw wallet status --json`, which must say `CONNECTED`. That, not what the Binance app
+displays, is the source of truth.
+
+No wallet to hand? `open-doors --demo` replays a real captured one and needs no credentials at all.
 
 ## Optional: show what is safe, using the Binance MCP Server
 
