@@ -21,8 +21,16 @@ import type { Approval, Tier } from './types.js';
  */
 
 export const DEFAULTS = {
-  /** Below this, an approval is noise regardless of how it scores. Configurable. */
+  /**
+   * Ceiling for the "worth acting on" floor. The floor itself scales to the
+   * wallet (see materialityFor) — a fixed $100 is meaningless to someone holding
+   * $40 and trivial to someone holding $40,000.
+   */
   materialUsd: 100,
+  /** Share of the portfolio below which an approval is not worth surfacing. */
+  materialShare: 0.1,
+  /** Never go below this, or dust starts generating alarming-looking rows. */
+  materialFloorUsd: 1,
   weights: {
     riskyHigh: 2.5,
     riskyMedium: 1.7,
@@ -34,7 +42,26 @@ export const DEFAULTS = {
   },
 };
 
-export type ScoreOptions = { materialUsd?: number; now?: number };
+export type ScoreOptions = {
+  /** Explicit floor. Omit to scale it to the portfolio. */
+  materialUsd?: number;
+  /** Total USD held, used to derive the floor when one is not given. */
+  portfolioUsd?: number;
+  now?: number;
+};
+
+/**
+ * How much exposure is worth acting on, for this wallet.
+ *
+ * Ten percent of what you hold, bounded to [$1, $100]. A $40 wallet surfaces its
+ * $40 approval without anyone passing a flag; a $40,000 wallet is not buried
+ * under every $5 allowance it has ever granted.
+ */
+export function materialityFor(portfolioUsd: number, w = DEFAULTS): number {
+  if (!Number.isFinite(portfolioUsd) || portfolioUsd <= 0) return w.materialFloorUsd;
+  const scaled = portfolioUsd * w.materialShare;
+  return Math.min(w.materialUsd, Math.max(w.materialFloorUsd, Math.round(scaled * 100) / 100));
+}
 
 const DAY_MS = 86_400_000;
 
@@ -119,7 +146,7 @@ export function score(
   opts: ScoreOptions = {},
 ): Approval[] {
   const now = opts.now ?? Date.now();
-  const materialUsd = opts.materialUsd ?? DEFAULTS.materialUsd;
+  const materialUsd = opts.materialUsd ?? materialityFor(opts.portfolioUsd ?? 0);
 
   const scored = approvals.map((a) => {
     const priceKey = `${a.chainId}:${a.tokenContract.toLowerCase()}`;

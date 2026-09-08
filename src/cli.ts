@@ -24,7 +24,8 @@ open-doors — see what can spend your tokens without asking, and close it.
 
 Options
   --chain <id>       limit to one chain (e.g. 56 for BSC)
-  --material <usd>   ignore approvals reaching less than this (default 100)
+  --material <usd>   floor for "worth acting on" (default: 10% of what you hold,
+                     bounded to $1-$100)
   --demo             replay a real captured wallet instead of live data
   --fixture <path>   read a saved JSON capture instead of the wallet
   --cex-balance <usd>  Agentic sub-account balance from the Binance MCP Server,
@@ -55,16 +56,17 @@ function fixturePath(args: Args): string | undefined {
 
 async function load(args: Args) {
   const fixture = fixturePath(args);
-  const { approvals, prices } = await collect({
+  const { approvals, prices, portfolioUsd } = await collect({
     chainId: typeof args.chain === 'string' ? args.chain : undefined,
     fixture,
   });
   const material = typeof args.material === 'string' ? Number(args.material) : undefined;
+  const opts = { materialUsd: material, portfolioUsd };
   // Rank once cheaply, enrich the top of the list, then rank again with expiry known.
-  let ranked = score(approvals, prices, { materialUsd: material });
+  let ranked = score(approvals, prices, opts);
   if (!fixture) {
     await enrichExpiry(ranked);
-    ranked = score(ranked, prices, { materialUsd: material });
+    ranked = score(ranked, prices, opts);
   }
   return { ranked, totals: totals(ranked) };
 }

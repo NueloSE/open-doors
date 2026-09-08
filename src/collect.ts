@@ -21,7 +21,13 @@ const rows = (d: unknown): Raw[] =>
   : Array.isArray((d as Raw)?.items) ? ((d as Raw).items as Raw[])
   : [];
 
-export type Collected = { approvals: Approval[]; prices: Map<string, number>; chains: Chain[] };
+export type Collected = {
+  approvals: Approval[];
+  prices: Map<string, number>;
+  chains: Chain[];
+  /** Total USD held, used to scale the materiality floor. */
+  portfolioUsd: number;
+};
 
 /** Page size per request. The CLI defaults to 20; approvals are small rows. */
 const PAGE = 100;
@@ -116,7 +122,8 @@ function join(approvals: Approval[], balances: Balance[], chains: Chain[]): Coll
   for (const a of approvals) {
     a.balanceUsd = usd.get(`${a.chainId}:${a.tokenContract.toLowerCase()}`) ?? 0;
   }
-  return { approvals, prices: unitPrice, chains };
+  const portfolioUsd = balances.reduce((sum, b) => sum + b.usdValue, 0);
+  return { approvals, prices: unitPrice, chains, portfolioUsd };
 }
 
 /**

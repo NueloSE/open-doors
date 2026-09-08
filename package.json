@@ -4,17 +4,28 @@
   "description": "Audit and close standing token approvals on Binance Agentic Wallet, ranked by money actually at risk.",
   "license": "MIT",
   "type": "module",
-  "bin": { "open-doors": "./dist/cli.js" },
+  "bin": {
+    "open-doors": "./dist/cli.js"
+  },
   "scripts": {
-    "build": "tsc",
-    "scan": "tsx src/cli.ts scan",
-    "dev": "tsx src/cli.ts",
+    "build": "tsc && chmod +x dist/cli.js",
+    "prepare": "npm run build",
+    "scan": "npm run build --silent && node dist/cli.js scan",
     "test": "tsx --test test/*.test.ts"
   },
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "devDependencies": {
     "@types/node": "^20.11.0",
     "tsx": "^4.7.0",
     "typescript": "^5.4.0"
-  }
+  },
+  "files": [
+    "dist",
+    "fixtures",
+    "SKILL.md",
+    "references",
+    "README.md"
+  ]
 }

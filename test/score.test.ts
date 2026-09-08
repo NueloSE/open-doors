@@ -115,3 +115,27 @@ test('balance rows are read from the field names the CLI actually uses', async (
   assert.equal(live?.amount, 42);
   assert.ok(live && Math.abs(live.usdValue - 41.99) < 0.01);
 });
+
+test('the materiality floor scales to the wallet instead of a fixed number', async () => {
+  const { materialityFor } = await import('../src/score.js');
+  // A $41 wallet should surface its $40 approval without anyone passing a flag.
+  assert.ok(materialityFor(41) < 40, 'a $40 approval must clear the floor on a $41 wallet');
+  assert.equal(materialityFor(410), 41);
+  // Bounded at both ends: dust does not raise alarms, whales are not buried.
+  assert.equal(materialityFor(40000), 100);
+  assert.equal(materialityFor(2), 1);
+  assert.equal(materialityFor(0), 1);
+});
+
+test('a $40 approval on a $41 wallet ranks above the fold with no flags', () => {
+  const prices = new Map([['56:0xtok', 1]]);
+  const ranked = score(
+    [mk({ id: 'usdt', balanceUsd: 39.99, isUnlimited: true, expireTime: null }),
+     mk({ id: 'dust', balanceUsd: 0.5, isUnlimited: true, expireTime: null })],
+    prices,
+    { now: NOW, portfolioUsd: 40.99 },
+  );
+  assert.equal(ranked[0]?.id, 'usdt');
+  assert.equal(ranked[0]?.tier, 'HIGH');
+  assert.equal(ranked[1]?.tier, 'REVIEW');
+});

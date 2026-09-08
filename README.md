@@ -25,9 +25,10 @@ unlimited approvals behind — one of them over the whole USDT balance.*
 ### 1. No wallet, no keys, no setup — 30 seconds
 
 ```bash
-git clone https://github.com/<your-username>/open-doors
-cd open-doors && npm install
-npx tsx src/cli.ts scan --demo
+git clone https://github.com/NueloSE/open-doors
+cd open-doors
+npm install && npm link      # `open-doors` is now on your PATH
+open-doors --demo
 ```
 
 Replays a real captured wallet (address redacted). Nothing to sign in to, nothing to fund.
@@ -40,7 +41,7 @@ Needs the Binance Agentic Wallet CLI and an MPC wallet created in the Binance ap
 npm install -g @binance/agentic-wallet     # the skill installs this lazily; do it directly
 baw auth signin --json                     # open the link, check the pairing code, confirm in the app
 baw wallet status --json                   # must say CONNECTED — this, not the app screen, is the truth
-npx tsx src/cli.ts scan
+open-doors scan
 ```
 
 `scan` only reads. It calls `wallet chains`, `wallet balance`, `approvals list` and `approvals
@@ -50,7 +51,7 @@ in about ten seconds.
 ### 3. As an agent skill — how it is meant to be used
 
 ```bash
-npx skills add https://github.com/<your-username>/open-doors
+npx skills add https://github.com/NueloSE/open-doors
 ```
 
 Then talk to your agent normally:
@@ -127,7 +128,7 @@ The flag is optional — the scan is complete without it.
 ## Command reference
 
 ```bash
-open-doors scan                        # rank every standing approval by money at risk
+open-doors                             # rank every standing approval by money at risk
 open-doors scan --all                  # include low-risk ones
 open-doors scan --demo                 # replay a real captured wallet, no credentials
 open-doors scan --chain 56             # one chain only
