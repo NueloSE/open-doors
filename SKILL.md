@@ -1,6 +1,6 @@
 ---
 name: open-doors
-description: Audit and close standing token approvals on Binance Agentic Wallet, ranked by how much money each one can actually reach. Use when the user asks what can spend their tokens, about token approvals or allowances, about revoking access, or about wallet security exposure.
+description: Audit and revoke ERC-20 token approvals (allowances) on a Binance Agentic Wallet, ranked by how much money each spender can actually reach. Use for questions about token approvals, allowances, spender permissions, revoking contract access, unlimited approvals, or which contracts can move tokens out of the wallet. Specifically about standing on-chain allowances granted to spender contracts — not about making payments, account billing, or subscription spend.
 version: 0.1.0
 license: MIT
 ---
