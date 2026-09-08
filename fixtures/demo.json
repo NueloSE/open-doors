@@ -1,0 +1,96 @@
+{
+  "_note": "Illustrative shapes mirroring `baw approvals list` and `baw wallet balance`. Used for offline runs and tests; replace with real captures from your own wallet.",
+  "approvals": [
+    {
+      "tokenSymbol": "USDT",
+      "tokenContract": "0x55d398326f99059fF775485246999027B3197955",
+      "tokenDecimals": 18,
+      "spender": "0x9f2c4a1b77e3d5860cc41ba9de77c1a0f6b311ab",
+      "spenderName": null,
+      "spenderIcon": null,
+      "amount": "unlimited",
+      "riskyLevel": "high",
+      "riskyMsg": "Spender contract is unverified",
+      "binanceChainId": "56",
+      "chainName": "BSC",
+      "type": "approve",
+      "noInteractive": true,
+      "approveTime": 1767139200000,
+      "expireTime": null
+    },
+    {
+      "tokenSymbol": "USDC",
+      "tokenContract": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+      "tokenDecimals": 18,
+      "spender": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+      "spenderName": "PancakeSwap",
+      "spenderIcon": "https://example.com/cake.png",
+      "amount": "unlimited",
+      "riskyLevel": "low",
+      "riskyMsg": null,
+      "binanceChainId": "56",
+      "chainName": "BSC",
+      "type": "approve",
+      "noInteractive": null,
+      "approveTime": 1779840000000,
+      "expireTime": null
+    },
+    {
+      "tokenSymbol": "USDT",
+      "tokenContract": "0x55d398326f99059fF775485246999027B3197955",
+      "tokenDecimals": 18,
+      "spender": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+      "spenderName": "Uniswap Permit2",
+      "spenderIcon": null,
+      "amount": "500.0",
+      "riskyLevel": "low",
+      "riskyMsg": null,
+      "binanceChainId": "56",
+      "chainName": "BSC",
+      "type": "permit2",
+      "noInteractive": null,
+      "approveTime": 1786636800000,
+      "expireTime": 1799000000000
+    },
+    {
+      "tokenSymbol": "CAKE",
+      "tokenContract": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+      "tokenDecimals": 18,
+      "spender": "0x77aa6bc2f0d1e4b3ca8890e1cb37a2f5c1de9e01",
+      "spenderName": null,
+      "spenderIcon": null,
+      "amount": "unlimited",
+      "riskyLevel": "low",
+      "riskyMsg": null,
+      "binanceChainId": "56",
+      "chainName": "BSC",
+      "type": "approve",
+      "noInteractive": null,
+      "approveTime": 1788220800000,
+      "expireTime": null
+    }
+  ],
+  "balances": [
+    {
+      "binanceChainId": "56",
+      "tokenContract": "0x55d398326f99059fF775485246999027B3197955",
+      "tokenSymbol": "USDT",
+      "amount": 1240.0,
+      "usdValue": 1240.0
+    },
+    {
+      "binanceChainId": "56",
+      "tokenContract": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+      "tokenSymbol": "USDC",
+      "amount": 180.0,
+      "usdValue": 180.0
+    },
+    {
+      "binanceChainId": "56",
+      "tokenContract": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+      "tokenSymbol": "CAKE",
+      "amount": 22.5,
+      "usdValue": 42.1
+    }
+  ]
+}
