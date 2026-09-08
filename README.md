@@ -134,6 +134,7 @@ open-doors                             # rank every standing approval by money a
 open-doors --all                       # include the low-risk ones it filtered out
 open-doors --demo                      # replay a real captured wallet, no credentials
 open-doors --chain 56                  # one chain only
+open-doors --fresh                     # re-read the wallet instead of reusing a recent scan
 open-doors --json                      # machine-readable, ids included
 open-doors explain <id>                # full identity and why it ranks where it does
 open-doors close <id>                  # close one, confirmed individually
@@ -142,6 +143,12 @@ open-doors --help
 ```
 
 `scan` is the default, so bare `open-doors` is the scan.
+
+Reading a wallet takes a few seconds, so a scan is cached for 60 seconds and `explain` reuses it —
+otherwise describing a row you were just shown would re-read everything. The output says when it is
+replaying a cached scan, and `--fresh` forces a live read. **`close` never uses the cache**: a revoke
+is decided on current state, because acting on a stale approval list is the mistake this tool exists
+to prevent.
 
 **Ids are long, and a unique prefix is enough** — `open-doors explain 56:0x55d3` works. Full ids come
 from `--json`.

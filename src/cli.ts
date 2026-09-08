@@ -7,6 +7,7 @@ import { closeDoors } from './revoke.js';
 import { BawMissing, BawSignedOut } from './baw.js';
 import type { Approval, Tier } from './types.js';
 import { progress } from './progress.js';
+import { readCache, writeCache, ageSeconds } from './cache.js';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -31,6 +32,7 @@ Options
   --fixture <path>   read a saved JSON capture instead of the wallet
   --cex-balance <usd>  Agentic sub-account balance from the Binance MCP Server,
                        shown as funds approvals cannot reach
+  --fresh            re-read the wallet instead of reusing a recent scan
   --json             machine-readable output
   --yes              skip per-approval confirmation (not recommended)
 `;
@@ -55,12 +57,32 @@ function fixturePath(args: Args): string | undefined {
   return typeof args.fixture === 'string' ? args.fixture : undefined;
 }
 
-async function load(args: Args) {
+/**
+ * `fresh` forces a live read. Anything that acts on the result asks for it —
+ * a revoke must be decided on current state, never a cached snapshot.
+ */
+async function load(args: Args, fresh = false) {
   const fixture = fixturePath(args);
+  if (args.fresh === true) fresh = true;
+
+  if (!fixture && !fresh) {
+    const cached = await readCache();
+    if (cached) {
+      const material = typeof args.material === 'string' ? Number(args.material) : undefined;
+      const ranked = score(cached.approvals, new Map(), {
+        materialUsd: material,
+        portfolioUsd: cached.portfolioUsd,
+      });
+      return { ranked, totals: totals(ranked), cachedAgeS: ageSeconds(cached.at) };
+    }
+  }
+
   // Silent for --json so machine output is never racing a spinner.
   const prog = progress(!fixture && args.json !== true);
   try {
-    return await gather(args, fixture, prog);
+    const result = await gather(args, fixture, prog);
+    if (!fixture) await writeCache(result.ranked, result.portfolioUsd);
+    return result;
   } finally {
     prog.done();
   }
@@ -80,7 +102,7 @@ async function gather(args: Args, fixture: string | undefined, prog: ReturnType<
     await enrichExpiry(ranked, 12, prog);
     ranked = score(ranked, prices, opts);
   }
-  return { ranked, totals: totals(ranked) };
+  return { ranked, totals: totals(ranked), portfolioUsd, cachedAgeS: 0 };
 }
 
 const TIERS: Tier[] = ['CRITICAL', 'HIGH', 'REVIEW', 'OK'];
@@ -113,7 +135,7 @@ async function main() {
   if (args.help || cmd === 'help') { console.log(HELP); return; }
 
   if (cmd === 'scan') {
-    const { ranked, totals: t } = await load(args);
+    const { ranked, totals: t, cachedAgeS } = await load(args);
     if (args.json) { console.log(JSON.stringify({ totals: t, approvals: ranked }, null, 2)); return; }
     if (args.demo === true) {
       console.log('\n  Replaying a real captured wallet — not yours. Run without --demo to scan your own.');
@@ -123,6 +145,7 @@ async function main() {
       renderScan(ranked, t, {
         showAll: args.all === true,
         cexBalanceUsd: Number.isFinite(cex) ? cex : undefined,
+        cachedAgeS,
       }),
     );
     return;
@@ -131,7 +154,7 @@ async function main() {
   if (cmd === 'explain') {
     const id = args._[1];
     const { ranked } = await load(args);
-    if (!id) { listChoices(ranked, 'explain'); process.exitCode = 1; return; }
+    if (!id) { listChoices(ranked, 'explain'); return; }
     const a = ranked.find((x) => x.id === id || x.id.startsWith(id));
     if (!a) { console.error(`No approval matching "${id}".`); process.exitCode = 1; return; }
     console.log(`\n  ${sentence(a)}\n`);
@@ -150,7 +173,7 @@ async function main() {
       process.exitCode = 1;
       return;
     }
-    const { ranked } = await load(args);
+    const { ranked } = await load(args, true); // always current before acting
     let targets: Approval[];
     const tier = typeof args.tier === 'string' ? args.tier.toUpperCase() as Tier : null;
 

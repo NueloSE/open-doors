@@ -36,6 +36,8 @@ export type RenderOptions = {
   whyWidth?: number;
   /** Agentic sub-account balance, read via the Binance MCP Server. */
   cexBalanceUsd?: number;
+  /** Seconds since the underlying scan, when replayed from cache. */
+  cachedAgeS?: number;
 };
 
 export function renderScan(approvals: Approval[], t: {
@@ -114,6 +116,12 @@ export function renderScan(approvals: Approval[], t: {
   if (!opts.showAll && t.hidden > 0) {
     const s = t.hidden === 1 ? 'approval' : 'approvals';
     out.push(dim(`  +${t.hidden} low-risk ${s} not shown — run with --all`));
+  } else if (opts.showAll && t.hidden === 0) {
+    // Otherwise --all looks identical to the default and reads as broken.
+    out.push(dim('  Showing everything — nothing was filtered out.'));
+  }
+  if (opts.cachedAgeS && opts.cachedAgeS > 0) {
+    out.push(dim(`  From a scan ${opts.cachedAgeS}s ago — use --fresh to re-read the wallet.`));
   }
   if (t.critical > 0) {
     out.push('', `  Close the critical ones:  ${bold('open-doors close --tier CRITICAL')}`);
