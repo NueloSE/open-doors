@@ -102,3 +102,16 @@ test('an empty result and an unreadable wallet are not the same thing', () => {
   assert.equal(t.worst, null);
   assert.equal(t.reachableUsd, 0);
 });
+
+test('balance rows are read from the field names the CLI actually uses', async () => {
+  // wallet balance returns address/balance/value, not tokenContract/amount/usdValue.
+  // Reading the documented names alone silently zeroes every exposure.
+  const { normaliseBalance } = await import('../src/normalise.js');
+  const live = normaliseBalance({
+    symbol: 'USDT', address: '0x55d3', binanceChainId: '56',
+    balance: '42', price: '0.9996', value: '41.985872155020914',
+  });
+  assert.equal(live?.tokenContract, '0x55d3');
+  assert.equal(live?.amount, 42);
+  assert.ok(live && Math.abs(live.usdValue - 41.99) < 0.01);
+});

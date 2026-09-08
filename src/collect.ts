@@ -135,8 +135,10 @@ export async function enrichExpiry(approvals: Approval[], topN = 12): Promise<vo
           '--spender', a.spender,
           '--type', a.type,
         ]);
-        if (d.expireTime === null) a.expireTime = null;
-        else if (typeof d.expireTime === 'number') a.expireTime = d.expireTime;
+        // the payload nests under `detail`; accept a flat shape too
+        const row = (d.detail && typeof d.detail === 'object' ? d.detail : d) as Raw;
+        if (row.expireTime === null) a.expireTime = null;
+        else if (typeof row.expireTime === 'number') a.expireTime = row.expireTime;
       } catch {
         // enrichment only; a failure must not sink the scan
       }
