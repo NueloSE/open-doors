@@ -38,6 +38,8 @@ export type RenderOptions = {
   cexBalanceUsd?: number;
   /** Seconds since the underlying scan, when replayed from cache. */
   cachedAgeS?: number;
+  /** Draw rules between columns and rows. */
+  borders?: boolean;
 };
 
 export function renderScan(approvals: Approval[], t: {
@@ -75,8 +77,15 @@ export function renderScan(approvals: Approval[], t: {
     chain: Math.max(5, ...rows.map((r) => r.chain.length)),
   };
 
+  const bordered = opts.borders === true;
+  const sep = bordered ? dim(' │ ') : '  ';
+  const widths = [w.tier, w.reach, w.token, w.spender, w.chain, whyWidth];
+  const rule = (l: string, m: string, r: string) =>
+    dim(l + widths.map((n) => '─'.repeat(n + 2)).join(m) + r);
+
+  if (bordered) out.push('  ' + rule('┌', '┬', '┐'));
   out.push(
-    '  ' +
+    '  ' + (bordered ? dim('│ ') : '') +
       dim(
         [
           pad('TIER', w.tier),
@@ -84,26 +93,29 @@ export function renderScan(approvals: Approval[], t: {
           pad('TOKEN', w.token),
           pad('SPENDER', w.spender),
           pad('CHAIN', w.chain),
-          'WHY',
-        ].join('  '),
-      ),
+          bordered ? pad('WHY', whyWidth) : 'WHY',
+        ].join(sep),
+      ) + (bordered ? dim(' │') : ''),
   );
+  if (bordered) out.push('  ' + rule('├', '┼', '┤'));
 
   for (const [i, r] of rows.entries()) {
     const style = TIER_STYLE[r.tier];
     out.push(
-      '  ' +
+      '  ' + (bordered ? dim('│ ') : '') +
         [
           style(pad(r.tier, w.tier)),
           padStart(r.reach, w.reach),
           pad(r.token, w.token),
           dim(pad(r.spender, w.spender)),
           dim(pad(r.chain, w.chain)),
-          dim(r.why),
-        ].join('  '),
+          dim(bordered ? pad(r.why, whyWidth) : r.why),
+        ].join(sep) + (bordered ? dim(' │') : ''),
     );
-    if (i === 0 && rows.length > 1) out.push('');
+    if (bordered && i < rows.length - 1) out.push('  ' + rule('├', '┼', '┤'));
+    if (!bordered && i === 0 && rows.length > 1) out.push('');
   }
+  if (bordered) out.push('  ' + rule('└', '┴', '┘'));
 
   out.push('');
   if (typeof opts.cexBalanceUsd === 'number') {

@@ -32,6 +32,7 @@ Options
   --fixture <path>   read a saved JSON capture instead of the wallet
   --cex-balance <usd>  Agentic sub-account balance from the Binance MCP Server,
                        shown as funds approvals cannot reach
+  --borders          draw rules between columns and rows
   --fresh            re-read the wallet instead of reusing a recent scan
   --json             machine-readable output
   --yes              skip per-approval confirmation (not recommended)
@@ -146,6 +147,7 @@ async function main() {
         showAll: args.all === true,
         cexBalanceUsd: Number.isFinite(cex) ? cex : undefined,
         cachedAgeS,
+        borders: args.borders === true,
       }),
     );
     return;

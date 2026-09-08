@@ -2,11 +2,41 @@
   "name": "open-doors",
   "version": "0.1.0",
   "description": "Audit and close standing token approvals on Binance Agentic Wallet, ranked by money actually at risk.",
+  "keywords": [
+    "binance",
+    "agent-os",
+    "agentic-wallet",
+    "token-approvals",
+    "allowance",
+    "revoke",
+    "wallet-security",
+    "bsc",
+    "web3",
+    "ai-agent",
+    "mcp",
+    "claude"
+  ],
+  "homepage": "https://github.com/NueloSE/open-doors#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NueloSE/open-doors.git"
+  },
+  "bugs": {
+    "url": "https://github.com/NueloSE/open-doors/issues"
+  },
+  "author": "NueloSE",
   "license": "MIT",
   "type": "module",
   "bin": {
     "open-doors": "./dist/cli.js"
   },
+  "files": [
+    "dist",
+    "fixtures",
+    "SKILL.md",
+    "references",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc && chmod +x dist/cli.js",
     "prepare": "npm run build",
@@ -16,16 +46,12 @@
   "engines": {
     "node": ">=18"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@types/node": "^20.11.0",
     "tsx": "^4.7.0",
     "typescript": "^5.4.0"
-  },
-  "files": [
-    "dist",
-    "fixtures",
-    "SKILL.md",
-    "references",
-    "README.md"
-  ]
+  }
 }
