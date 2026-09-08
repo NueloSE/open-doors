@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { baw } from './baw.js';
+import { baw, requireSignedIn } from './baw.js';
 import { normaliseApproval, normaliseBalance, balanceIndex } from './normalise.js';
 import type { Approval, Balance, Chain } from './types.js';
 
@@ -42,6 +42,9 @@ async function chains(): Promise<Chain[]> {
 
 export async function collect(opts: { chainId?: string; fixture?: string } = {}): Promise<Collected> {
   if (opts.fixture) return fromFixture(opts.fixture);
+
+  // Before anything else: an unreadable wallet must fail loudly, not look empty.
+  await requireSignedIn();
 
   const all = await chains();
   const sweep = opts.chainId ? all.filter((c) => c.binanceChainId === opts.chainId) : all;

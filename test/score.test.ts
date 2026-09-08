@@ -91,3 +91,14 @@ test('totals count only open doors and surface the worst one', () => {
   assert.equal(t.worst?.id, 'worst');
   assert.equal(t.hidden, 1);
 });
+
+test('an empty result and an unreadable wallet are not the same thing', () => {
+  // Guards the failure this tool cannot afford: reporting "nothing can spend
+  // your tokens" when the wallet was never actually read. collect() throws
+  // BawSignedOut before scoring, so a clean headline can only ever come from a
+  // scan that genuinely returned zero open doors.
+  const t = totals([]);
+  assert.equal(t.openDoors, 0);
+  assert.equal(t.worst, null);
+  assert.equal(t.reachableUsd, 0);
+});

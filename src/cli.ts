@@ -4,7 +4,7 @@ import { score, totals } from './score.js';
 import { renderScan } from './render.js';
 import { sentence, usd } from './explain.js';
 import { closeDoors } from './revoke.js';
-import { BawMissing } from './baw.js';
+import { BawMissing, BawSignedOut } from './baw.js';
 import type { Approval, Tier } from './types.js';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -139,7 +139,11 @@ async function main() {
 }
 
 main().catch((err) => {
-  if (err instanceof BawMissing) { console.error(`\n${err.message}\n`); process.exitCode = 1; return; }
+  if (err instanceof BawMissing || err instanceof BawSignedOut) {
+    console.error(`\n${err.message}\n`);
+    process.exitCode = 1;
+    return;
+  }
   console.error(`\n${(err as Error).message}\n`);
   process.exitCode = 1;
 });

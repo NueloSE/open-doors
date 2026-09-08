@@ -56,12 +56,38 @@ export async function baw<T>(args: string[]): Promise<T> {
   return parsed.data;
 }
 
-export async function isSignedIn(): Promise<boolean> {
-  try {
-    const status = await baw<Record<string, unknown>>(['wallet', 'status']);
-    return Boolean(status && (status.connected ?? status.signedIn ?? true));
-  } catch (err) {
-    if (err instanceof BawMissing) throw err;
-    return false;
+export class BawSignedOut extends Error {
+  constructor(readonly status: string) {
+    super(
+      `The wallet is not connected (status: ${status}).\n` +
+        'Sign in first:\n' +
+        '  baw auth signin --json      # open the link, check the pairing code, confirm in the app\n' +
+        '  baw wallet status --json    # this, not the app screen, is the source of truth',
+    );
+    this.name = 'BawSignedOut';
   }
+}
+
+/**
+ * Connection state, straight from the CLI.
+ *
+ * The docs are explicit that `wallet status` is the source of truth rather than
+ * what the Binance app displays — the app can show a successful sign-in while
+ * the CLI is still unconnected.
+ */
+export async function walletStatus(): Promise<string> {
+  const data = await baw<Record<string, unknown>>(['wallet', 'status']);
+  return typeof data.status === 'string' ? data.status.toUpperCase() : 'UNKNOWN';
+}
+
+/**
+ * Throw unless the wallet is genuinely connected.
+ *
+ * A scan that cannot read anything must never be reported as a clean result:
+ * telling someone nothing can spend their tokens, when in fact we never looked,
+ * is the one failure this tool cannot afford.
+ */
+export async function requireSignedIn(): Promise<void> {
+  const status = await walletStatus();
+  if (status !== 'CONNECTED') throw new BawSignedOut(status);
 }
