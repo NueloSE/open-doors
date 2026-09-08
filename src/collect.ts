@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { baw, requireSignedIn } from './baw.js';
 import { normaliseApproval, normaliseBalance, balanceIndex } from './normalise.js';
 import type { Approval, Balance, Chain } from './types.js';
+import type { Progress } from './progress.js';
 
 /**
  * Gather what the model needs: every standing approval, and what the wallet
@@ -74,12 +75,16 @@ async function allApprovals(): Promise<Raw[]> {
   return out;
 }
 
-export async function collect(opts: { chainId?: string; fixture?: string } = {}): Promise<Collected> {
+export async function collect(
+  opts: { chainId?: string; fixture?: string; progress?: Progress } = {},
+): Promise<Collected> {
   if (opts.fixture) return fromFixture(opts.fixture);
 
   // An unreadable wallet must fail loudly rather than look empty.
+  opts.progress?.step('checking the wallet is connected');
   await requireSignedIn();
 
+  opts.progress?.step('reading approvals and balances');
   const [chainList, approvalRows, balanceRows] = await Promise.all([
     chains(),
     allApprovals(),
@@ -131,7 +136,12 @@ function join(approvals: Approval[], balances: Balance[], chains: Chain[]): Coll
  * so it is fetched for the top candidates rather than the whole list — it only
  * changes the ranking where there is real exposure to rank.
  */
-export async function enrichExpiry(approvals: Approval[], topN = 12): Promise<void> {
+export async function enrichExpiry(
+  approvals: Approval[],
+  topN = 12,
+  prog?: Progress,
+): Promise<void> {
+  prog?.step('checking which approvals expire');
   await Promise.all(
     approvals.slice(0, topN).map(async (a) => {
       try {

@@ -6,6 +6,7 @@ import { sentence, usd, identity } from './explain.js';
 import { closeDoors } from './revoke.js';
 import { BawMissing, BawSignedOut } from './baw.js';
 import type { Approval, Tier } from './types.js';
+import { progress } from './progress.js';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -56,16 +57,27 @@ function fixturePath(args: Args): string | undefined {
 
 async function load(args: Args) {
   const fixture = fixturePath(args);
+  // Silent for --json so machine output is never racing a spinner.
+  const prog = progress(!fixture && args.json !== true);
+  try {
+    return await gather(args, fixture, prog);
+  } finally {
+    prog.done();
+  }
+}
+
+async function gather(args: Args, fixture: string | undefined, prog: ReturnType<typeof progress>) {
   const { approvals, prices, portfolioUsd } = await collect({
     chainId: typeof args.chain === 'string' ? args.chain : undefined,
     fixture,
+    progress: prog,
   });
   const material = typeof args.material === 'string' ? Number(args.material) : undefined;
   const opts = { materialUsd: material, portfolioUsd };
   // Rank once cheaply, enrich the top of the list, then rank again with expiry known.
   let ranked = score(approvals, prices, opts);
   if (!fixture) {
-    await enrichExpiry(ranked);
+    await enrichExpiry(ranked, 12, prog);
     ranked = score(ranked, prices, opts);
   }
   return { ranked, totals: totals(ranked) };

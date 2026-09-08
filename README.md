@@ -50,6 +50,8 @@ in about ten seconds.
 
 ### 3. As an agent skill — how it is meant to be used
 
+This is the intended experience. The CLI is the engine; the conversation is the interface.
+
 ```bash
 npx skills add https://github.com/NueloSE/open-doors
 ```
@@ -129,16 +131,44 @@ The flag is optional — the scan is complete without it.
 
 ```bash
 open-doors                             # rank every standing approval by money at risk
-open-doors scan --all                  # include low-risk ones
-open-doors scan --demo                 # replay a real captured wallet, no credentials
-open-doors scan --chain 56             # one chain only
-open-doors scan --material 30          # change the materiality floor (default $100)
-open-doors scan --cex-balance 250      # also show what approvals cannot reach
-open-doors scan --json                 # machine-readable, ids included
-open-doors explain <id>                # why this one is ranked where it is
+open-doors --all                       # include the low-risk ones it filtered out
+open-doors --demo                      # replay a real captured wallet, no credentials
+open-doors --chain 56                  # one chain only
+open-doors --json                      # machine-readable, ids included
+open-doors explain <id>                # full identity and why it ranks where it does
 open-doors close <id>                  # close one, confirmed individually
 open-doors close --tier CRITICAL       # close a whole tier, still one confirmation each
+open-doors --help
 ```
+
+`scan` is the default, so bare `open-doors` is the scan.
+
+**Ids are long, and a unique prefix is enough** — `open-doors explain 56:0x55d3` works. Full ids come
+from `--json`.
+
+### Verifying an approval before you close it
+
+The table truncates addresses to stay readable. `explain` gives you the whole thing:
+
+```
+  Binance Wallet can spend unlimited USDT on BSC, reaching $39.98 of what you hold today.
+
+    Token    USDT  0x55d398326f99059fF775485246999027B3197955
+    Spender  Binance Wallet  0xb300000b72DEAEb607a12d5f54773D1C19c7028d
+    Chain    BSC (56)    Type  approve
+    Scope    unlimited    Reaches  $39.98
+    Tier     HIGH
+    Why      unlimited · never expires
+
+  Close it with:  open-doors close 56:0x55d398326f99059
+```
+
+### The materiality floor
+
+Below some amount, an approval is not worth anyone's attention. That threshold **scales to your
+wallet** — ten percent of what you hold, bounded to $1–$100 — so a $40 wallet surfaces its $40
+approval without any flag, and a $40,000 wallet is not buried under every $5 allowance it ever
+granted. Override with `--material <usd>`.
 
 `fixtures/illustrative.json` is synthetic and shows the full range of signals the model reads — a
 high-risk unverified spender, a never-used approval, differing ages — which a fresh wallet does not
